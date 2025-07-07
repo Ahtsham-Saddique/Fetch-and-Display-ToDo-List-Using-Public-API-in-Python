@@ -1,36 +1,47 @@
+# create_to_do.py
 # fetch_to_do_list.py
 import requests
 import json
 
-def get_details():
+def create_todo():
     url = "https://api.freeapi.app/api/v1/todos/"
-    response = requests.get(url)
+
+    title=input("Enter the title  : ")
+    discription=input("Enter discription : ")
+    is_complete=input("ENter O/1")
+    
+    
+
+    # Sample todo data (you can customize or take input)
+    todo_data = {
+        "title": title,
+        "description":discription,
+        "isComplete": "true" if is_complete=='1' else 'false'
+    }
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, headers=headers, data=json.dumps(todo_data))
     data = response.json()
 
-    if data.get("success") and "data" in data:
-        inner_data = data["data"]
-        if not inner_data:
-            print(" No todos found.")
-            return
-        for todo_data in inner_data:
-            title = todo_data["title"]
-            description = todo_data.get("description", " ")
-            is_complete = todo_data["isComplete"]
-            createdAt = todo_data["createdAt"]
-
-            print(f"Title       : {title}")
-            print(f"Description : {description}")
-            print(f"Completed   : {is_complete}")
-            print(f"Created At  : {createdAt}")
-            print("-" * 40)
+    if data.get("success"):
+        created = data["data"]
+        print("✅ Todo created successfully!")
+        print(f"Title       : {created['title']}")
+        print(f"Description : {created.get('description', '')}")
+        print(f"Completed   : {created['isComplete']}")
+        print(f"Created At  : {created['createdAt']}")
     else:
-        print("Connection failed")
+        print("❌ Failed to create ToDo")
+        print("Message:", data.get("message"))
 
 def main():
     try:
-        get_details()
+        create_todo()
     except Exception as e:
-        print(str(e))
+        print("Error:", str(e))
 
 if __name__ == "__main__":
     main()
